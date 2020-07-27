@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">OkHttpPractices</string>
+    <string name="to_network">To Network Page</string>
+    <string name="get_data">Get Data From Network</string>
+</resources>
