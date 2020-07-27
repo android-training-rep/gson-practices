@@ -36,7 +36,7 @@ public class NetworkActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        Observer observer = new Observer<Response>(){
+        Observer observer = new Observer<String>(){
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -44,7 +44,7 @@ public class NetworkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Response response) {
+            public void onNext(String resp) {
                 Toast.makeText(NetworkActivity.this, "Get Data Success", Toast.LENGTH_LONG).show();
             }
 
@@ -59,18 +59,18 @@ public class NetworkActivity extends AppCompatActivity {
             }
         };
 
-        Observable observable = Observable.create(new ObservableOnSubscribe<Response>(){
+        Observable observable = Observable.create(new ObservableOnSubscribe<String>(){
             OkHttpClient client = new OkHttpClient();
 
             @Override
-            public void subscribe(ObservableEmitter<Response> emitter) throws Exception {
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
                 try {
                     Request request = new Request.Builder()
                             .url(myUrl)
                             .build();
                     Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
-                        emitter.onNext(response);
+                        emitter.onNext(response.body().toString());
                         emitter.onComplete();
                     } else if (!response.isSuccessful()) {
                         emitter.onError(new Exception("error"));
