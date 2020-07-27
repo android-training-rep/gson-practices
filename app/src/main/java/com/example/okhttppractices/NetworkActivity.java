@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.okhttppractices.model.Wrapper;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 
@@ -51,8 +52,11 @@ public class NetworkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Wrapper resp) {
-                Toast.makeText(NetworkActivity.this, "Get Data Success", Toast.LENGTH_LONG).show();
+            public void onNext(Wrapper wrapper) {
+                int count = wrapper.getData().size();
+                if (count >= 1) {
+                    Toast.makeText(NetworkActivity.this, wrapper.getData().get(0).getName(), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -75,14 +79,13 @@ public class NetworkActivity extends AppCompatActivity {
                     Request request = new Request.Builder()
                             .url(myUrl)
                             .build();
-                    Log.d(TAG, "start request");
                     Response response = client.newCall(request).execute();
-                    Log.d(TAG, "get response");
                     if (response.isSuccessful()) {
-                        String respStr = response.body().toString();
-                        Log.d(TAG, "response="+respStr);
+                        String respStr = response.body().string();
+                        Log.d(TAG, "response = "+respStr);
                         Gson gson = new Gson();
-                        Wrapper wrapper = gson.fromJson(respStr, Wrapper.class);
+                        java.lang.reflect.Type type = new TypeToken<Wrapper>() {}.getType();
+                        Wrapper wrapper = gson.fromJson(respStr, type);
                         emitter.onNext(wrapper);
                         emitter.onComplete();
                     } else if (!response.isSuccessful()) {

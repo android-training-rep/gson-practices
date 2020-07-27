@@ -16,4 +16,12 @@ public class Person {
     public String getAvatar() {
         return avatar;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 }
