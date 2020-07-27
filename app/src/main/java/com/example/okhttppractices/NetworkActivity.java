@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.okhttppractices.model.Person;
 import com.example.okhttppractices.model.Wrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -53,9 +55,9 @@ public class NetworkActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Wrapper wrapper) {
-                int count = wrapper.getData().size();
-                if (count >= 1) {
-                    Toast.makeText(NetworkActivity.this, wrapper.getData().get(0).getName(), Toast.LENGTH_LONG).show();
+                List<Person> data = wrapper.getData();
+                if (data.size() >= 1) {
+                    Toast.makeText(NetworkActivity.this, data.get(0).getName(), Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -82,7 +84,6 @@ public class NetworkActivity extends AppCompatActivity {
                     Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String respStr = response.body().string();
-                        Log.d(TAG, "response = "+respStr);
                         Gson gson = new Gson();
                         java.lang.reflect.Type type = new TypeToken<Wrapper>() {}.getType();
                         Wrapper wrapper = gson.fromJson(respStr, type);
