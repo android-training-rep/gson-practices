@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.okhttppractices.model.Wrapper;
+import com.google.gson.Gson;
+
 import java.io.IOException;
 
 import io.reactivex.Observable;
@@ -40,7 +43,7 @@ public class NetworkActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        Observer observer = new Observer<String>(){
+        Observer observer = new Observer<Wrapper>(){
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -48,7 +51,7 @@ public class NetworkActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(String resp) {
+            public void onNext(Wrapper resp) {
                 Toast.makeText(NetworkActivity.this, "Get Data Success", Toast.LENGTH_LONG).show();
             }
 
@@ -63,19 +66,24 @@ public class NetworkActivity extends AppCompatActivity {
             }
         };
 
-        Observable observable = Observable.create(new ObservableOnSubscribe<String>(){
+        Observable observable = Observable.create(new ObservableOnSubscribe<Wrapper>(){
             OkHttpClient client = new OkHttpClient();
 
             @Override
-            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+            public void subscribe(ObservableEmitter<Wrapper> emitter) throws Exception {
                 try {
                     Request request = new Request.Builder()
                             .url(myUrl)
                             .build();
+                    Log.d(TAG, "start request");
                     Response response = client.newCall(request).execute();
-                    Log.d(TAG, "response="+response.body().toString());
+                    Log.d(TAG, "get response");
                     if (response.isSuccessful()) {
-                        emitter.onNext(response.body().toString());
+                        String respStr = response.body().toString();
+                        Log.d(TAG, "response="+respStr);
+                        Gson gson = new Gson();
+                        Wrapper wrapper = gson.fromJson(respStr, Wrapper.class);
+                        emitter.onNext(wrapper);
                         emitter.onComplete();
                     } else if (!response.isSuccessful()) {
                         emitter.onError(new Exception("error"));
